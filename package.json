@@ -1,0 +1,18 @@
+{
+  "name": "import-csv",
+  "type": "module",
+  "displayName": "Import CSV",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [],
+  "author": "Thiago de Sa",
+  "license": "ISC",
+  "dependencies": {
+    "csv": "^6.2.8",
+    "formidable": "^2.1.1"
+  }
+}
