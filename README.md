@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to import-csv 👋</h1>
+<h1 align="center">Welcome to Import Excel File 👋</h1>
 <p>
   <a href="https://www.npmjs.com/package/import-csv" target="_blank">
     <img alt="Version" src="https://img.shields.io/npm/v/import-csv.svg">

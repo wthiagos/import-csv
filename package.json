@@ -1,23 +1,29 @@
 {
-  "name": "import-csv",
+  "name": "import-excel",
   "type": "module",
-  "displayName": "Import CSV",
+  "displayName": "Import Excel file",
   "version": "1.0.0",
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "dev": "node --watch src/server.js",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsup src --out-dir build",
     "test": "jest"
   },
   "keywords": [],
   "author": "Thiago de Sa",
   "license": "ISC",
   "dependencies": {
-    "csv": "^6.2.8",
-    "formidable": "^2.1.1",
+    "formidable": "^3.5.1",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "jest": "^29.5.0"
+    "@types/formidable": "^3.4.1",
+    "@types/jest": "^29.5.4",
+    "@types/node": "^20.5.6",
+    "jest": "^29.5.0",
+    "tsup": "^7.2.0",
+    "tsx": "^3.12.7",
+    "typescript": "^5.2.2"
   }
 }
