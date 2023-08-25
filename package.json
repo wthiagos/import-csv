@@ -6,13 +6,18 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "Thiago de Sa",
   "license": "ISC",
   "dependencies": {
     "csv": "^6.2.8",
-    "formidable": "^2.1.1"
+    "formidable": "^2.1.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   }
 }
