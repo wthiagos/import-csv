@@ -4,10 +4,21 @@
   "displayName": "Import Excel file",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.js",
+  "main": "src/server.ts",
+  "engines": {
+    "node": ">=18"
+  },
+  "tsup": {
+    "entry": [
+      "src/server.ts"
+    ],
+    "splitting": false,
+    "sourcemap": false,
+    "clean": true
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsup src --out-dir build",
+    "build": "tsup src --out-dir build --format esm",
     "test": "jest"
   },
   "keywords": [],
