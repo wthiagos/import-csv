@@ -6,5 +6,5 @@ app.listen({
     port: env.PORT,
 }, (err, address) => {
     if (err) throw err
-    // Server is now listening on ${address}
+    console.log(`Server is now listening on ${address}`)
 })

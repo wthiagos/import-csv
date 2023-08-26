@@ -1,13 +1,13 @@
 ﻿import Fastify from 'fastify'
-import {excelRoutes} from "./routes/excel";
 import rateLimit from "@fastify/rate-limit";
 import multipart from "@fastify/multipart";
+import {filesRoutes} from "./routes/files";
 export const app = Fastify({
     logger: true,
 });
 
 app.register(rateLimit, {
-    max: 3
+    max: 2
 })
 
 // @ts-ignore
@@ -37,7 +37,7 @@ app.setErrorHandler(function (error, request, reply) {
     reply.send(error)
 });
 
-app.register(excelRoutes, {
-    prefix: 'transactions',
+app.register(filesRoutes, {
+    prefix: 'files',
 });
 
