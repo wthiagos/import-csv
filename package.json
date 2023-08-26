@@ -1,5 +1,5 @@
 {
-  "name": "import-excel",
+  "name": "read-files",
   "type": "module",
   "displayName": "Import Excel file",
   "version": "1.0.0",
@@ -25,6 +25,9 @@
   "author": "Thiago de Sa",
   "license": "ISC",
   "dependencies": {
+    "@fastify/multipart": "^7.7.3",
+    "@fastify/rate-limit": "^8.0.3",
+    "fastify": "^4.21.0",
     "formidable": "^3.5.1",
     "xlsx": "^0.18.5"
   },
