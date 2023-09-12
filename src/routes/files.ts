@@ -1,5 +1,5 @@
 ﻿import {FastifyInstance} from "fastify";
-import {ReadExcelController} from "../controllers/files/ReadExcelController";
+import {ReadExcelController} from "../controllers/files/read-excel.controller";
 
 export const filesRoutes = async (app: FastifyInstance): Promise<void> => {
     const options = {
