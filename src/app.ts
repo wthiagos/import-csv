@@ -1,7 +1,7 @@
 ﻿import Fastify, {FastifyError, FastifyInstance, FastifyReply, FastifyRequest} from 'fastify'
 import rateLimit from "@fastify/rate-limit";
 import multipart from "@fastify/multipart";
-import {filesRoutes} from "./routes/files";
+import {routes} from "./routes";
 
 export const app: FastifyInstance = Fastify({
     logger: true,
@@ -26,9 +26,7 @@ app.register(multipart, {
     }
 });
 
-app.register(filesRoutes, {
-    prefix: 'files',
-});
+app.register(routes);
 
 app.setErrorHandler(function (error: FastifyError, request: FastifyRequest, reply: FastifyReply) {
     if (error instanceof Fastify.errorCodes.FST_ERR_BAD_STATUS_CODE) {
@@ -44,4 +42,6 @@ app.setErrorHandler(function (error: FastifyError, request: FastifyRequest, repl
 
     reply.send(error)
 });
+
+
 
