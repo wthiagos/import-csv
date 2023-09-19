@@ -1,0 +1,32 @@
+﻿export interface AlteracaoDependenteDTO {
+    tipoAlteracao?: string
+    contrato?: string
+    subfatura?: string
+    operadora?: string
+    matricula?: string
+    certificado?: string
+    codigoDependente?: string
+    nomeTitular?: string
+    cpfTitular?: string
+    nomeDependenteCadastrado?: string
+    nomeDependenteCorreto?: string
+    dataNascimentoCadastrada?: Date
+    dataNascimentoCorreta?: Date
+    estadoCivil?: string
+    grauParentescoCadastrado?: string
+    grauDeParentesco?: string
+    peso?: string
+    altura?: string
+    cpfCadastrado?: string
+    cpfCorreto?: string
+    nomeMaeCorreto?: string
+    nomePaiCorreto?: string
+    cartaoNacionalSaude?: string
+    numeroNascidoVivo?: string
+    loteChamado?: string
+    documento?: string
+    sequencia?: string
+    setor?: string
+    lotacao?: string
+    local?: string
+}

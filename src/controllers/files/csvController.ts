@@ -1,6 +1,7 @@
 ﻿import {readFileStream} from "../../utils/read-file-stream";
 import {FastifyReply, FastifyRequest} from "fastify";
 import {MultipartFile, MultipartValue} from "@fastify/multipart";
+import {csvService} from "../../services/csvService";
 
 interface BodyType {
     csv: MultipartFile;
@@ -9,26 +10,17 @@ interface BodyType {
     ignoreLastLine?: MultipartValue<boolean>;
 }
 
-export const ReadCsvController = async (req: FastifyRequest<{ Body: BodyType }>, reply: FastifyReply) => {
+export const csvController = async (req: FastifyRequest<{ Body: BodyType }>, reply: FastifyReply) => {
     const {
         csv,
-        sheetsToIgnore: fields,
         headerLine,
         ignoreLastLine
     } = req.body;
 
-    const sheetsToIgnore: string[] = [];
 
-    if (fields) {
-        fields
-            .forEach((f: MultipartValue<string>) => {
-                sheetsToIgnore.push(f.value);
-            })
-    }
 
-    const records = readFileStream(
+    const records = csvService(
         await csv.toBuffer(),
-        sheetsToIgnore,
         headerLine?.value,
         ignoreLastLine?.value
     );

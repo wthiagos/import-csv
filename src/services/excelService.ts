@@ -1,7 +1,10 @@
 ﻿import xlsx, {WorkBook} from "xlsx";
-import {latinise} from "./latinise";
+import {latinise} from "../utils/latinise";
+import {formatDate} from "../utils/formatDate";
+import {isDate} from "../utils/isDate";
+import {ExcelDTO} from "../dtos/excel";
 
-export const readFileStream = (
+export const excelService = (
     buffer: Buffer,
     sheetsToIgnore: string[],
     headerLine: number = 0,
@@ -13,7 +16,7 @@ export const readFileStream = (
         cellDates: true
     });
 
-    let records: any[] = [];
+    let records: ExcelDTO[] = [];
 
     workbook
         .SheetNames
@@ -60,7 +63,10 @@ export const readFileStream = (
                     rows.push(rowData)
 
                     row.forEach((value: string | number | Date | null, indexValue: number) => {
-                        rows[indexRow][collumns[indexValue]] = value;
+                        if (isDate(value))
+                            rows[indexRow][collumns[indexValue]] = formatDate(value);
+                        else
+                            rows[indexRow][collumns[indexValue]] = value;
                     })
                 });
 

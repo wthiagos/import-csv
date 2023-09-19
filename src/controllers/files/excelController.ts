@@ -1,6 +1,7 @@
-﻿import {readFileStream} from "../../utils/read-file-stream";
-import {FastifyReply, FastifyRequest} from "fastify";
+﻿import {FastifyReply, FastifyRequest} from "fastify";
 import {MultipartFile, MultipartValue} from "@fastify/multipart";
+import {excelService} from "../../services/excelService";
+import {ExcelDTO} from "../../dtos/excel";
 
 interface BodyType {
     excel: MultipartFile;
@@ -9,7 +10,7 @@ interface BodyType {
     ignoreLastLine?: MultipartValue<boolean>;
 }
 
-export const ReadExcelController = async (req: FastifyRequest<{ Body: BodyType }>, reply: FastifyReply) => {
+export const excelController = async (req: FastifyRequest<{ Body: BodyType }>, reply: FastifyReply) => {
     const {
         excel,
         sheetsToIgnore: fields,
@@ -26,7 +27,7 @@ export const ReadExcelController = async (req: FastifyRequest<{ Body: BodyType }
             })
     }
 
-    const records = readFileStream(
+    const records: ExcelDTO[] = excelService(
         await excel.toBuffer(),
         sheetsToIgnore,
         headerLine?.value,

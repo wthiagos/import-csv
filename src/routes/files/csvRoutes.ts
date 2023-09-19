@@ -1,15 +1,15 @@
 ﻿import {FastifyInstance} from "fastify";
-import {ReadExcelController} from "../../controllers/files/read-excel.controller";
+import {csvController} from "../../controllers/files/csvController";
 
-export const excelRoutes = async (app: FastifyInstance): Promise<void> => {
+export const csvRoutes = async (app: FastifyInstance): Promise<void> => {
     const options = {
         schema: {
             consumes: ['multipart/form-data'],
             body: {
                 type: 'object',
-                required: ['excel'],
+                required: ['csv'],
                 properties: {
-                    excel: {
+                    csv: {
                         type: 'object',
                         properties: {
                             encoding: {
@@ -24,21 +24,17 @@ export const excelRoutes = async (app: FastifyInstance): Promise<void> => {
                             mimetype: {
                                 type: 'string',
                                 enum: [
-                                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                                    'application/vnd.ms-excel',
-                                    'application/vnd.ms-excel.sheet.macroenabled.12'
+                                    'text/csv'
                                 ]
                             }
                         }
                     },
-                    sheetsToIgnore: {
-                        type: 'array',
-                        items: {
-                            type: 'object',
-                            properties: {
-                                value: {
-                                    type: 'string'
-                                }
+                    delimiter: {
+                        type: 'object',
+                        properties: {
+                            value: {
+                                type: 'string',
+                                default: ';'
                             }
                         }
                     },
@@ -66,8 +62,8 @@ export const excelRoutes = async (app: FastifyInstance): Promise<void> => {
     };
 
     app.post(
-        '/excel',
+        '/csv',
         options,
-        ReadExcelController
+        csvController
     );
 }

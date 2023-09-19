@@ -1,9 +1,8 @@
 ﻿import xlsx, {WorkBook} from "xlsx";
-import {latinise} from "./latinise";
+import {latinise} from "../utils/latinise";
 
-export const readFileStream = (
+export const csvService = (
     buffer: Buffer,
-    sheetsToIgnore: string[],
     headerLine: number = 0,
     ignoreLastLine: boolean = false
 ): any => {
@@ -17,7 +16,6 @@ export const readFileStream = (
 
     workbook
         .SheetNames
-        .filter((s: string) => !sheetsToIgnore.find(sti => sti === s))
         .forEach((s: string) => {
             const options: xlsx.Sheet2JSONOpts = {
                 header: 1,
