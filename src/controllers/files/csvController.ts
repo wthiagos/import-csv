@@ -1,31 +1,33 @@
-﻿import {readFileStream} from "../../utils/read-file-stream";
-import {FastifyReply, FastifyRequest} from "fastify";
-import {MultipartFile, MultipartValue} from "@fastify/multipart";
-import {csvService} from "../../services/csvService";
+﻿// controllers/files/csvController.ts
+import { FastifyReply, FastifyRequest } from 'fastify';
+import { MultipartFile } from '@fastify/multipart';
+import { csvService } from '../../services/csvService.js';
 
-interface BodyType {
+type CsvRequestBody = {
     csv: MultipartFile;
-    sheetsToIgnore?: MultipartValue<string>[];
-    headerLine?: MultipartValue<number>;
-    ignoreLastLine?: MultipartValue<boolean>;
-}
+    delimiter?: string;
+    headerLine?: number;
+    ignoreLastLine?: boolean;
+};
 
-export const csvController = async (req: FastifyRequest<{ Body: BodyType }>, reply: FastifyReply) => {
+export const csvController = async (
+    req: FastifyRequest<{ Body: CsvRequestBody }>,
+    reply: FastifyReply
+) => {
     const {
         csv,
-        headerLine,
-        ignoreLastLine
+        delimiter = ';',
+        headerLine = 0,
+        ignoreLastLine = false
     } = req.body;
 
+    const buffer = await csv.toBuffer();
 
+    const records = csvService(buffer, {
+        delimiter,
+        headerLine,
+        ignoreLastLine
+    });
 
-    const records = csvService(
-        await csv.toBuffer(),
-        headerLine?.value,
-        ignoreLastLine?.value
-    );
-
-    return reply
-        .status(200)
-        .send(records)
-}
+    return reply.status(200).send(records);
+};

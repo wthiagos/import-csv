@@ -1,40 +1,30 @@
-﻿import {FastifyReply, FastifyRequest} from "fastify";
-import {MultipartFile, MultipartValue} from "@fastify/multipart";
-import {excelService} from "../../services/excelService";
-import {ExcelDTO} from "../../dtos/excel";
+﻿import { FastifyRequest, FastifyReply } from "fastify";
+import { MultipartFile } from '@fastify/multipart';
+import { ExcelUploadBody } from "../../schemas/ExcelUploadSchema.js";
+import { excelService } from "../../services/excelService.js";
+import { V6DTO } from "../../dtos/layouts/v6/index.js";
 
-interface BodyType {
-    excel: MultipartFile;
-    sheetsToIgnore?: MultipartValue<string>[];
-    headerLine?: MultipartValue<number>;
-    ignoreLastLine?: MultipartValue<boolean>;
-}
-
-export const excelController = async (req: FastifyRequest<{ Body: BodyType }>, reply: FastifyReply) => {
+export const ReadExcelController = async (
+    req: FastifyRequest<{ Body: ExcelUploadBody }>,
+    reply: FastifyReply
+): Promise<void> => {
     const {
         excel,
-        sheetsToIgnore: fields,
+        sheetsToIgnore = [],
         headerLine,
         ignoreLastLine
     } = req.body;
 
-    const sheetsToIgnore: string[] = [];
+    const buffer = await (excel as MultipartFile).toBuffer();
 
-    if (fields) {
-        fields
-            .forEach((f: MultipartValue<string>) => {
-                sheetsToIgnore.push(f.value);
-            })
-    }
+    const ignored = sheetsToIgnore.map(f => f.value);
 
-    const records: ExcelDTO[] = excelService(
-        await excel.toBuffer(),
-        sheetsToIgnore,
-        headerLine?.value,
-        ignoreLastLine?.value
-    );
+    const records = excelService(
+        buffer, {
+        sheetsToIgnore: ignored,  // CORRECT
+        headerLine: headerLine?.value,
+        ignoreLastLine: ignoreLastLine?.value
+    });
 
-    return reply
-        .status(200)
-        .send(records)
-}
+    reply.status(200).send(records);
+};

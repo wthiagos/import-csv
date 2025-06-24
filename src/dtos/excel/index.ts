@@ -1,4 +1,4 @@
-﻿export interface ExcelDTO {
+﻿export interface ExcelDTO<T = Record<string, unknown>> {
     sheetName: string;
-    data: any[] | any;
+    data: T[];
 }

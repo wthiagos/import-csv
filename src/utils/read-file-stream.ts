@@ -1,74 +1,94 @@
-﻿import xlsx, {WorkBook} from "xlsx";
-import {latinise} from "./latinise";
+﻿import xlsx, { WorkBook, WorkSheet } from "xlsx";
+import { latinise } from "./latinise.js";
 
+/**
+ * Represents parsed records for a single Excel sheet.
+ */
+export interface SheetRecords {
+    name: string;
+    records: Record<string, string>[];
+}
+
+/**
+ * Reads Excel buffer, parses sheets ignoring specified ones,
+ * normalizes headers, and returns data as objects keyed by column names.
+ *
+ * @param buffer - The Excel file content as a Buffer.
+ * @param sheetsToIgnore - Array of sheet names to exclude from parsing.
+ * @param headerLine - Zero-based index of the header row (default 0).
+ * @param ignoreLastLine - Whether to skip the last line in each sheet (default false).
+ * @returns A record mapping sheet names to their parsed SheetRecords.
+ * @throws If the buffer is invalid or parsing fails.
+ */
 export const readFileStream = (
     buffer: Buffer,
-    sheetsToIgnore: string[],
-    headerLine: number = 0,
-    ignoreLastLine: boolean = false
-): any => {
-    const workbook: WorkBook = xlsx.read(buffer, {
-        type: "buffer",
-        raw: false,
-        cellDates: true
-    });
+    sheetsToIgnore: string[] = [],
+    headerLine = 0,
+    ignoreLastLine = false
+): Record<string, SheetRecords> => {
+    if (!Buffer.isBuffer(buffer)) {
+        throw new TypeError("Expected a Buffer for the Excel file.");
+    }
 
-    let records: any[] = [];
+    let workbook: WorkBook;
 
-    workbook
-        .SheetNames
-        .filter((s: string) => !sheetsToIgnore.find(sti => sti === s))
-        .forEach((s: string) => {
-            const options: xlsx.Sheet2JSONOpts = {
-                header: 1,
-                skipHidden: true,
-                raw: false,
-            }
+    try {
+        workbook = xlsx.read(buffer, { type: "buffer" });
+    } catch (error) {
+        throw new Error("Failed to read Excel buffer: " + (error as Error).message);
+    }
 
-            const data: string[][] = xlsx
-                .utils
-                .sheet_to_json(workbook.Sheets[s], options)
+    const sheetNames = workbook.SheetNames.filter(
+        (sheet) => !sheetsToIgnore.includes(sheet)
+    );
 
-            const collumns: string[] = data[headerLine]
-                .map((r: string | null) => {
-                    return latinise(r)
-                        .trim()
-                        .toLowerCase()
-                        .replace(/[^a-zA-Z ]/g, '_')
-                        .replace(/\s/g, '_')
-                        .replace(/__/g, '_')
-                        .replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase())
-                });
+    const records: Record<string, SheetRecords> = {};
 
-            const rows: any[] = []
+    for (const sheetName of sheetNames) {
+        const sheet: WorkSheet | undefined = workbook.Sheets[sheetName];
+        if (!sheet) {
+            // Defensive, unlikely to happen
+            records[sheetName] = { name: sheetName, records: [] };
+            continue;
+        }
 
-            data
-                .slice(1)
-                .forEach((row: string[], indexRow: number) => {
-                    if (
-                        (data.slice(1).length - 1) === indexRow &&
-                        ignoreLastLine
-                    )
-                        return;
-
-                    const rowData: any = {};
-
-                    collumns.forEach(c => {
-                        rowData[c] = null
-                    })
-
-                    rows.push(rowData)
-
-                    row.forEach((value: string | number | Date | null, indexValue: number) => {
-                        rows[indexRow][collumns[indexValue]] = value;
-                    })
-                });
-
-            records.push({
-                sheetName: s,
-                data: rows
-            });
+        // Parse sheet data as arrays of cells, header:1 means array of arrays
+        const data: (string | null)[][] = xlsx.utils.sheet_to_json(sheet, {
+            header: 1,
+            skipHidden: true,
         });
 
+        // Validate header line exists
+        if (!data[headerLine]) {
+            records[sheetName] = { name: sheetName, records: [] };
+            continue;
+        }
+
+        // Normalize header cells into column keys
+        const columns = data[headerLine].map((cell) =>
+            latinise(cell ?? "")
+                .trim()
+                .toLowerCase()
+                .replace(/\s+/g, "_")
+        );
+
+        // Get all rows after the header line
+        const rows = data.slice(headerLine + 1);
+        const rowsToProcess = ignoreLastLine ? rows.slice(0, -1) : rows;
+
+        // Map each row array to object keyed by normalized column names
+        const parsedRows = rowsToProcess.map((row) =>
+            columns.reduce<Record<string, string>>((acc, col, idx) => {
+                acc[col] = row[idx] ?? "";
+                return acc;
+            }, {})
+        );
+
+        records[sheetName] = {
+            name: sheetName,
+            records: parsedRows,
+        };
+    }
+
     return records;
-}
+};

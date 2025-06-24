@@ -1,69 +1,17 @@
-﻿import {FastifyInstance} from "fastify";
-import {csvController} from "../../controllers/files/csvController";
+﻿import { FastifyInstance } from 'fastify';
+import { csvController } from '../../controllers/files/csvController.js';
+import { CsvBodySchema } from '../../schemas/CsvBodySchema.js';
 
-export const csvRoutes = async (app: FastifyInstance): Promise<void> => {
-    const options = {
-        schema: {
-            consumes: ['multipart/form-data'],
-            body: {
-                type: 'object',
-                required: ['csv'],
-                properties: {
-                    csv: {
-                        type: 'object',
-                        properties: {
-                            encoding: {
-                                type: 'string'
-                            },
-                            filename: {
-                                type: 'string'
-                            },
-                            limit: {
-                                type: 'boolean'
-                            },
-                            mimetype: {
-                                type: 'string',
-                                enum: [
-                                    'text/csv'
-                                ]
-                            }
-                        }
-                    },
-                    delimiter: {
-                        type: 'object',
-                        properties: {
-                            value: {
-                                type: 'string',
-                                default: ';'
-                            }
-                        }
-                    },
-                    headerLine: {
-                        type: 'object',
-                        properties: {
-                            value: {
-                                type: 'number',
-                                default: 0
-                            }
-                        }
-                    },
-                    ignoreLastLine: {
-                        type: 'object',
-                        properties: {
-                            value: {
-                                type: 'boolean',
-                                default: false
-                            }
-                        }
-                    },
-                }
-            }
-        }
-    };
+export async function csvRoutes(app: FastifyInstance): Promise<void> {
 
     app.post(
         '/csv',
-        options,
+        {
+            schema: {
+                consumes: ['multipart/form-data'],
+                body: CsvBodySchema
+            }
+        },
         csvController
     );
 }

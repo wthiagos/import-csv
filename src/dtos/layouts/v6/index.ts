@@ -1,10 +1,10 @@
-﻿import {InclusaoGrupoFamiliarDTO} from "./inclusaoGrupoFamiliarDTO";
-import {InclusaoDependenteDTO} from "./inclusaoDependenteDTO";
-import {AlteracaoTitularDTO} from "./alteracaoTitularDTO";
-import {AlteracaoDependenteDTO} from "./alteracaoDependenteDTO";
-import {ExclusaoDTO} from "./exclusaoDTO";
-import {SolicitacaoSegundaViaCartaoDTO} from "./solicitacaoSegundaViaCartaoDTO";
-import {TransferenciaDTO} from "./transferenciaDTO";
+﻿import { AlteracaoDependenteDTO } from "./alteracaoDependenteDTO.js";
+import { AlteracaoTitularDTO } from "./alteracaoTitularDTO.js";
+import { ExclusaoDTO } from "./exclusaoDTO.js";
+import { InclusaoDependenteDTO } from "./inclusaoDependenteDTO.js";
+import { InclusaoGrupoFamiliarDTO } from "./inclusaoGrupoFamiliarDTO.js";
+import { SolicitacaoSegundaViaCartaoDTO } from "./solicitacaoSegundaViaCartaoDTO.js";
+import { TransferenciaDTO } from "./transferenciaDTO.js";
 
 export interface V6DTO {
     inclusaoGrupoFamiliar: InclusaoGrupoFamiliarDTO[];

@@ -1,80 +1,80 @@
-﻿import xlsx, {WorkBook} from "xlsx";
-import {latinise} from "../utils/latinise";
-import {formatDate} from "../utils/formatDate";
-import {isDate} from "../utils/isDate";
-import {ExcelDTO} from "../dtos/excel";
+﻿import xlsx, { WorkBook } from 'xlsx';
+import { latinise } from '../utils/latinise.js';
+import { formatDate } from '../utils/formatDate.js';
+import { isDate } from '../utils/isDate.js';
+import { ExcelDTO } from '../dtos/excel/index.js';
 
-export const excelService = (
+interface ExcelOptions {
+    sheetsToIgnore?: string[];
+    headerLine?: number;
+    ignoreLastLine?: boolean;
+}
+
+export const excelService = <T = Record<string, unknown>>(
     buffer: Buffer,
-    sheetsToIgnore: string[],
-    headerLine: number = 0,
-    ignoreLastLine: boolean = false
-): any => {
+    options: ExcelOptions = {},
+    rowMapper?: (row: Record<string, any>) => T
+): ExcelDTO<T>[] => {
+    const {
+        sheetsToIgnore = [],
+        headerLine = 0,
+        ignoreLastLine = false,
+    } = options;
+
     const workbook: WorkBook = xlsx.read(buffer, {
-        type: "buffer",
+        type: 'buffer',
         raw: false,
-        cellDates: true
+        cellDates: true,
     });
 
-    let records: ExcelDTO[] = [];
+    const records: ExcelDTO<T>[] = [];
 
-    workbook
-        .SheetNames
-        .filter((s: string) => !sheetsToIgnore.find(sti => sti === s))
-        .forEach((s: string) => {
-            const options: xlsx.Sheet2JSONOpts = {
-                header: 1,
-                skipHidden: true,
-                raw: false,
-            }
+    for (const sheetName of workbook.SheetNames) {
+        if (sheetsToIgnore.includes(sheetName)) continue;
 
-            const data: string[][] = xlsx
-                .utils
-                .sheet_to_json(workbook.Sheets[s], options)
-
-            const collumns: string[] = data[headerLine]
-                .map((r: string | null) => {
-                    return latinise(r)
-                        .trim()
-                        .toLowerCase()
-                        .replace(/[^a-zA-Z ]/g, '_')
-                        .replace(/\s/g, '_')
-                        .replace(/__/g, '_')
-                        .replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase())
-                });
-
-            const rows: any[] = []
-
-            data
-                .slice(1)
-                .forEach((row: string[], indexRow: number) => {
-                    if (
-                        (data.slice(1).length - 1) === indexRow &&
-                        ignoreLastLine
-                    )
-                        return;
-
-                    const rowData: any = {};
-
-                    collumns.forEach(c => {
-                        rowData[c] = null
-                    })
-
-                    rows.push(rowData)
-
-                    row.forEach((value: string | number | Date | null, indexValue: number) => {
-                        if (isDate(value))
-                            rows[indexRow][collumns[indexValue]] = formatDate(value);
-                        else
-                            rows[indexRow][collumns[indexValue]] = value;
-                    })
-                });
-
-            records.push({
-                sheetName: s,
-                data: rows
-            });
+        const sheet = workbook.Sheets[sheetName];
+        const rawData: any[][] = xlsx.utils.sheet_to_json(sheet, {
+            header: 1,
+            skipHidden: true,
+            raw: false,
         });
 
+        const headerRow = rawData[headerLine];
+        if (!headerRow || !Array.isArray(headerRow)) continue;
+
+        const columns = headerRow.map((cell: string | null) =>
+            latinise(cell || '')
+                .trim()
+                .toLowerCase()
+                .replace(/[^a-zA-Z ]/g, '_')
+                .replace(/\s+/g, '_')
+                .replace(/__+/g, '_')
+                .replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase())
+        );
+
+        const dataRows = rawData.slice(headerLine + 1);
+        const rows: T[] = [];
+
+        for (let i = 0; i < dataRows.length; i++) {
+            if (ignoreLastLine && i === dataRows.length - 1) break;
+
+            const row = dataRows[i];
+            const rawObject: Record<string, any> = {};
+
+            columns.forEach((col, idx) => {
+                const value = row?.[idx];
+                rawObject[col] = isDate(value) ? formatDate(value) : value ?? null;
+            });
+
+            const typedRow = rowMapper ? rowMapper(rawObject) : (rawObject as T);
+            rows.push(typedRow);
+        }
+
+        records.push({
+            sheetName,
+            data: rows,
+        });
+    }
+
     return records;
-}
+};

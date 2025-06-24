@@ -4,9 +4,9 @@
   "displayName": "Import Excel file",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.ts",
+  "main": "src/server.js",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "tsup": {
     "entry": [
@@ -17,29 +17,37 @@
     "clean": true
   },
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "tsup src --out-dir build --format esm",
+    "dev": "node --loader ts-node/esm src/server.ts",
+    "dev:watch": "nodemon --verbose --watch src --exec \"node --experimental-loader ./loader-register.js src/server.ts\"",
+    "start": "node dist/server.js",
+    "build": "tsc",
     "test": "jest"
   },
   "keywords": [],
   "author": "Thiago de Sa",
   "license": "ISC",
   "dependencies": {
-    "@fastify/multipart": "^7.7.3",
-    "@fastify/rate-limit": "^8.0.3",
-    "dayjs": "^1.11.9",
-    "dotenv": "^16.3.1",
-    "fastify": "^4.21.0",
+    "@fastify/multipart": "^9.0.3",
+    "@fastify/rate-limit": "^10.3.0",
+    "@fastify/type-provider-typebox": "^5.1.0",
+    "@sinclair/typebox": "^0.34.37",
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.5.0",
+    "fastify": "^5.4.0",
     "xlsx": "^0.18.5",
-    "zod": "^3.22.2"
+    "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@types/formidable": "^3.4.1",
-    "@types/jest": "^29.5.4",
-    "@types/node": "^20.5.6",
-    "jest": "^29.5.0",
-    "tsup": "^7.2.0",
-    "tsx": "^3.12.7",
-    "typescript": "^5.2.2"
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.4",
+    "depcheck": "^1.4.7",
+    "esbuild": "^0.25.5",
+    "eslint": "^9.29.0",
+    "jest": "^30.0.2",
+    "nodemon": "^3.1.10",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
   }
 }
