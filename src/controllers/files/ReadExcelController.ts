@@ -1,39 +1,29 @@
-﻿import {readFileStream} from "../../utils/read-file-stream";
-import {FastifyReply, FastifyRequest} from "fastify";
-import {MultipartFile, MultipartValue} from "@fastify/multipart";
+﻿import { FastifyRequest, FastifyReply } from "fastify";
+import { MultipartFile } from '@fastify/multipart';
+import { readFileStream } from "../../utils/read-file-stream.js";
+import { ExcelUploadBody } from "../../schemas/ExcelUploadSchema.js";
 
-interface BodyType {
-    excel: MultipartFile;
-    sheetsToIgnore?: MultipartValue<string>[];
-    headerLine?: MultipartValue<number>;
-    ignoreLastLine?: MultipartValue<boolean>;
-}
-
-export const ReadExcelController = async (req: FastifyRequest<{ Body: BodyType }>, reply: FastifyReply) => {
+export const ReadExcelController = async (
+    req: FastifyRequest<{ Body: ExcelUploadBody }>,
+    reply: FastifyReply
+): Promise<void> => {
     const {
         excel,
-        sheetsToIgnore: fields,
+        sheetsToIgnore = [],
         headerLine,
         ignoreLastLine
     } = req.body;
 
-    const sheetsToIgnore: string[] = [];
+    const buffer = await (excel as MultipartFile).toBuffer();
 
-    if (fields) {
-        fields
-            .forEach((f: MultipartValue<string>) => {
-                sheetsToIgnore.push(f.value);
-            })
-    }
+    const ignored = sheetsToIgnore.map(f => f.value);
 
     const records = readFileStream(
-        await excel.toBuffer(),
-        sheetsToIgnore,
+        buffer,
+        ignored,
         headerLine?.value,
         ignoreLastLine?.value
     );
 
-    return reply
-        .status(200)
-        .send(records)
-}
+    reply.status(200).send(records);
+};
