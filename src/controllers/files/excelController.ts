@@ -2,7 +2,6 @@
 import { MultipartFile } from '@fastify/multipart';
 import { ExcelUploadBody } from "../../schemas/ExcelUploadSchema.js";
 import { excelService } from "../../services/excelService.js";
-import { V6DTO } from "../../dtos/layouts/v6/index.js";
 
 export const ReadExcelController = async (
     req: FastifyRequest<{ Body: ExcelUploadBody }>,

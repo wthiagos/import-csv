@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: import-csv-app
+    container_name: lm-app
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -21,7 +21,7 @@ services:
 
   mongodb:
     image: mongo:7.0
-    container_name: import-csv-mongo
+    container_name: lm-mongo
     ports:
       - '27017:27017'
     volumes:
@@ -29,7 +29,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: secret
-      MONGO_INITDB_DATABASE: importcsv
+      MONGO_INITDB_DATABASE: lm
     healthcheck:
       test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 10s
