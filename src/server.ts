@@ -1,7 +1,10 @@
 import { app } from "./app.js";
+import { connectToDatabase } from "./database/moongose.js";
 import { env } from "./env/index.js";
 
 try {
+    await connectToDatabase(); // Connect to MongoDB
+
     await app.listen({ host: '0.0.0.0', port: env.PORT });
     console.log(`🚀 Server running at http://localhost:${env.PORT}`);
 } catch (err) {

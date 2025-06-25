@@ -9,6 +9,9 @@ await config({
 const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
     PORT: z.coerce.number().default(3333),
+    MONGODB_URI: z.string().url(),
+    MONGODB_USER: z.string(),
+    MONGODB_PASS: z.string()
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

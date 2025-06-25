@@ -4,6 +4,7 @@ import rateLimit from '@fastify/rate-limit';
 import multipart from '@fastify/multipart';
 import { filesRoutes } from './routes/files/index.js';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { routes } from './routes/index.js';
 
 export const app = Fastify({
     logger: true
@@ -30,9 +31,7 @@ app.register(multipart, {
 });
 
 // Routes
-app.register(filesRoutes, {
-    prefix: '/files'
-});
+app.register(routes);
 
 // Error handler
 app.setErrorHandler((error, request, reply) => {

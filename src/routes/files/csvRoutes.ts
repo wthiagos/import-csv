@@ -3,7 +3,6 @@ import { csvController } from '../../controllers/files/csvController.js';
 import { CsvBodySchema } from '../../schemas/CsvBodySchema.js';
 
 export async function csvRoutes(app: FastifyInstance): Promise<void> {
-
     app.post(
         '/csv',
         {
